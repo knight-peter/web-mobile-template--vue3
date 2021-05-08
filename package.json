@@ -1,14 +1,21 @@
 {
   "name": "web-mobile-template--vue3",
-  "version": "0.1.0",
-  "private": true,
+  "appName": "VueMicroApp",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "author": "xuqi <xuqipeter@qq.com>",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint --fix",
+    "style": "prettier --write src/**/*.{js,json}"
   },
   "dependencies": {
+    "@biaodian-web/basic": "^1.0.11",
+    "amfe-flexible": "^2.2.1",
     "core-js": "^3.6.5",
+    "lodash": "^4.17.21",
+    "vant": "^3.0.16",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
@@ -22,9 +29,11 @@
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
+    "babel-plugin-import": "^1.13.3",
     "eslint": "^6.7.2",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-vue": "^7.0.0",
+    "postcss-pxtorem": "^5.1.1",
     "prettier": "^2.2.1",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2"
