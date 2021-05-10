@@ -11,7 +11,7 @@
     "style": "prettier --write src/**/*.{js,json}"
   },
   "dependencies": {
-    "@biaodian-web/basic": "^1.0.11",
+    "@biaodian-web/basic": "^1.1.0",
     "amfe-flexible": "^2.2.1",
     "core-js": "^3.6.5",
     "lodash": "^4.17.21",

@@ -4,7 +4,7 @@ import { service } from '@biaodian-web/basic';
 const {
   axiosService: {
     biaodianApiInstance,
-    tokenConfig: axiosTokenConfig, // 修改获取token相关配置
+    biaodianConfig, // 修改获取token等相关配置
     biaodianApiFetch,
   },
   apolloService: { gql, tokenConfig: apolloTokenConfig, biaodianGraphqlClient: Client },
