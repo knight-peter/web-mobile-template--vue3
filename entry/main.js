@@ -1,14 +1,16 @@
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
-import { createApp } from "vue";
-import { createRouter, createWebHashHistory } from "vue-router";
-import { createStore } from "vuex";
-import "./public-path";
-import actions from "../src/shared/actions";
+import { createApp } from 'vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+import { createStore } from 'vuex';
+import './public-path';
+import actions from '../src/shared/actions';
+import { useRouter } from '../src/hooks/router';
+import { createProvider } from '../src/global/lib/utils';
 
-import App from "./App";
+import App from './App';
 
-const { appName } = require("../package.json");
+const { appName } = require('../package.json');
 
 let instance = null;
 let router = null;
@@ -24,43 +26,52 @@ async function render(props) {
     // 注入 actions 实例
     actions.setActions(props);
   }
-  const { registerStore, registerComponent, registerRoute } = await import(
-    "../src"
-  );
+  const { registerStore, registerComponent, registerRoute, registerHook } = await import('../src');
 
   if (registerComponent) {
     const componentMap = await registerComponent();
-
-    Object.keys(componentMap).forEach((key) => {
-      const { component, options } = componentMap[key];
-      app.use(component, ...(options || []));
-    });
+    const componentKeys = Object.keys(componentMap);
+    if (componentKeys.length) {
+      componentKeys.forEach((key) => {
+        const { component, options } = componentMap[key];
+        app.use(component, ...(options || []));
+      });
+    }
   }
 
   if (registerStore) {
     const modules = await registerStore();
-    const store = createStore({ modules });
-    app.use(store);
+    const moduleKeys = Object.keys(modules);
+    if (moduleKeys.length) {
+      const store = createStore({ modules });
+      app.use(store);
+    }
   }
   // 在 render 中创建 VueRouter，可以保证在卸载微应用时，移除 location 事件监听，防止事件污染
   if (registerRoute) {
     const routeMap = await registerRoute();
     const routes = Object.keys(routeMap).map((key) => routeMap[key]);
-    router = createRouter({
-      // 运行在主应用中时，添加路由命名空间 /vue
-      history: createWebHashHistory(
-        window.__POWERED_BY_QIANKUN__ ? `/${appName}/` : "/"
-      ),
-      routes,
-    });
-    app.use(router);
+    if (routes.length) {
+      router = createRouter({
+        // 运行在主应用中时，添加路由命名空间 /vue
+        history: createWebHashHistory(window.__POWERED_BY_QIANKUN__ ? `/${appName}/` : '/'),
+        routes,
+      });
+      const retRouter = useRouter(router);
+      app.use(retRouter);
+    }
   }
-
+  // 注册全局hooks
+  if (registerHook) {
+    const globalHookMap = await registerHook();
+    const globalHooks = Object.keys(globalHookMap).map((key) => globalHookMap[key]);
+    if (globalHooks.length) {
+      app.use(createProvider(globalHooks));
+    }
+  }
   // 挂载应用
   const { container } = props || {}; // 为了避免根 id #app 与其他的 DOM 冲突，需要限制查找范围
-  instance = app.mount(
-    container ? container.querySelector("#selfApp") : "#selfApp"
-  );
+  instance = app.mount(container ? container.querySelector('#selfApp') : '#selfApp');
 }
 
 // 独立运行时，直接挂载应用
@@ -73,14 +84,14 @@ if (!window.__POWERED_BY_QIANKUN__) {
  * 通常我们可以在这里做一些全局变量的初始化，比如不会在 unmount 阶段被销毁的应用级别的缓存等。
  */
 export async function bootstrap() {
-  console.log("VueMicroApp bootstraped");
+  console.log('VueMicroApp bootstraped');
 }
 
 /**
  * 应用每次进入都会调用 mount 方法，通常我们在这里触发应用的渲染方法
  */
 export async function mount(props) {
-  console.log("VueMicroApp mount", props);
+  console.log('VueMicroApp mount', props);
   render(props);
 }
 
@@ -88,7 +99,7 @@ export async function mount(props) {
  * 应用每次 切出/卸载 会调用的方法，通常在这里我们会卸载微应用的应用实例
  */
 export async function unmount() {
-  console.log("VueMicroApp unmount");
+  console.log('VueMicroApp unmount');
   instance.unmount();
   instance = null;
   router = null;

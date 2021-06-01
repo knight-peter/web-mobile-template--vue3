@@ -1,11 +1,12 @@
 import { tools } from '@biaodian-web/basic';
 import routesMap from './routes';
+import { globalHooks } from './hooks';
+export { globalHookKeyMap } from './hooks';
 import * as selfComponents from './components';
 import 'amfe-flexible';
 import 'vant/lib/index.css';
 
 export * from './components';
-
 const { returnRegister } = tools;
 
 const importPackages = [
@@ -13,7 +14,7 @@ const importPackages = [
 ];
 export async function registerComponent() {
   const components = {
-    ElementUI: {
+    vant: {
       component: await import('vant'),
     },
   };
@@ -45,6 +46,16 @@ export async function registerRoute() {
     importPackages,
     registerType: 'registerRoute',
     defaultRegister: routes,
+  });
+  return ret;
+}
+
+export async function registerHook() {
+  const hooks = { ...globalHooks };
+  const ret = await returnRegister({
+    importPackages,
+    registerType: 'registerHook',
+    defaultRegister: hooks,
   });
   return ret;
 }
